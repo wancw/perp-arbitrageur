@@ -10,13 +10,17 @@
         "clean": "rm -rf ./build ./.serverless ./nyc_output",
         "arbitrage": "env $(cat .env.production | grep -v '#' | xargs) ts-node --files src/index.ts",
         "invoke-local": "sls invoke local --stage production --function arbitrageur",
-        "deploy": "npm run build && sls deploy --aws-s3-accelerate --stage production"
+        "deploy": "npm run build && sls deploy --aws-s3-accelerate --stage production",
+        "logs:arbitrageur": "sls logs --stage production -f arbitrageur",
+        "logs:telegramBot": "sls logs --stage production -f telegramBot",
+        "show:pnl": "env $(cat .env.production | grep -v '#' | xargs) ts-node --files scripts/show-pnl.ts"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
         "@perp/contract": "1.0.4",
         "async-mutex": "0.2.6",
+        "aws-lambda": "1.0.6",
         "big.js": "5.2.2",
         "ethers": "5.0.19",
         "ftx-api-rest": "0.0.6",
@@ -31,6 +35,7 @@
     "devDependencies": {
         "@testdeck/di-typedi": "0.0.10",
         "@typechain/ethers-v5": "3.0.0",
+        "@types/aws-lambda": "8.10.72",
         "@types/big.js": "4.0.5",
         "@types/lodash": "4.14.154",
         "@types/luxon": "1.22.0",
