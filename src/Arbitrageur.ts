@@ -15,6 +15,7 @@ import { Service } from "typedi"
 import { Wallet } from "ethers"
 import Big from "big.js"
 import FTXRest from "ftx-api-rest"
+import { sleep } from "./util"
 
 @Service()
 export class Arbitrageur {
@@ -53,7 +54,15 @@ export class Arbitrageur {
             },
         })
 
-        await this.arbitrage()
+        const LAMBDA_SCHEDULE_RATE = 60 * 1000 // 1 minute in ms
+        const LAMBDA_EXECUTION_BUFFER = 5 * 1000 // 10 second in ms
+        const ARBITRAGE_TIME_GAP = 1 * 1000 // 1 second in ms
+
+        const timeToStop = Date.now() + LAMBDA_SCHEDULE_RATE - LAMBDA_EXECUTION_BUFFER
+        while (Date.now() < timeToStop) {
+            await this.arbitrage()
+            await sleep(ARBITRAGE_TIME_GAP)
+        }
     }
 
     async startInterval(): Promise<void> {
