@@ -11,6 +11,8 @@
         "arbitrage": "env $(cat .env.production | grep -v '#' | xargs) ts-node --files src/index.ts",
         "invoke-local": "sls invoke local --stage production --function arbitrageur",
         "deploy": "npm run build && sls deploy --aws-s3-accelerate --stage production",
+        "logs:arbitrageur": "sls logs --stage production -f arbitrageur",
+        "logs:telegramBot": "sls logs --stage production -f telegramBot",
         "show:pnl": "env $(cat .env.production | grep -v '#' | xargs) ts-node --files scripts/show-pnl.ts"
     },
     "author": "",
