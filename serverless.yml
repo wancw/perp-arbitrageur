@@ -20,6 +20,8 @@ provider:
         ARBITRAGEUR_PK: ${env:ARBITRAGEUR_PK}
         FTX_API_KEY: ${env:FTX_API_KEY}
         FTX_API_SECRET: ${env:FTX_API_SECRET}
+        TELEGRAM_BOT_TOKEN: ${env:TELEGRAM_BOT_TOKEN}
+        TELEGRAM_ADMIN_USER_ID: ${env:TELEGRAM_ADMIN_USER_ID}
 
 package:
     exclude:
@@ -42,3 +44,10 @@ functions:
         maximumRetryAttempts: 0
         events:
             - schedule: rate(1 minute)
+
+    telegramBot:
+        handler: build/src/bot.telegramHandler
+        events:
+            - http:
+                  path: _webhook/tg/${env:TELEGRAM_WEBHOOK_PATH_SECRET}
+                  method: post
