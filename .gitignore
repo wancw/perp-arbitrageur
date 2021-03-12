@@ -105,6 +105,7 @@ dist
 
 /build
 /types/ethers
+/.webpack
 
 .env.production
 src/configs.ts

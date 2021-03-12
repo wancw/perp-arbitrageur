@@ -16,6 +16,7 @@ import { Wallet } from "ethers"
 import Big from "big.js"
 import FTXRest from "ftx-api-rest"
 import { sleep } from "./util"
+import { TelegramBot } from "./TelegramBot"
 
 @Service()
 export class Arbitrageur {
@@ -37,6 +38,7 @@ export class Arbitrageur {
         readonly serverProfile: ServerProfile,
         readonly systemMetadataFactory: SystemMetadataFactory,
         readonly ftxService: FtxService,
+        readonly telegramBot: TelegramBot
     ) {
         this.arbitrageur = ethService.privateKeyToWallet(serverProfile.arbitrageurPK)
         this.ftxClient = new FTXRest({
@@ -114,6 +116,7 @@ export class Arbitrageur {
                 event: "xDaiNotEnough",
                 params: { balance: xDaiBalance.toFixed() },
             })
+            await this.telegramBot.notifyAdmin(`xDai not enough\n(${xDaiBalance.toFixed()})`)
             return
         }
 
@@ -131,6 +134,7 @@ export class Arbitrageur {
                 event: "FtxUsdNotEnough",
                 params: { balance: ftxBalance.toFixed() },
             })
+            await this.telegramBot.notifyAdmin(`FTX USDC not enough\n(${ftxBalance.toFixed()})`)
             return
         }
 

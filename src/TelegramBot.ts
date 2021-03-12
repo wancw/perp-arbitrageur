@@ -100,6 +100,14 @@ export class TelegramBot {
         }
     }
 
+    async notifyAdmin(text: string): Promise<void> {
+        await this._sendMessage({
+            chat_id: this.adminUserId,
+            text,
+            parse_mode: "MarkdownV2",
+        })
+    }
+
     private async sendText(chat: TelegramChat, text: string, disableNotification = false): Promise<void> {
         await this._sendMessage({
             chat_id: chat.id,
