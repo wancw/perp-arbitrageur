@@ -1,0 +1,14 @@
+remote_write:
+  - url: <grafana_remote_write_endpoint>
+    basic_auth:
+      username: <grafana_instance_id>
+      password: <grafana_api_key>
+
+scrape_configs:
+  - job_name: perp-arbitrageur
+    scrape_interval: 1m
+    metrics_path: /production/_metrics/prom/<prometheus_metrics_path_secret>
+    scheme: https
+    static_configs:
+      - targets:
+        - <apigateway_hostname>
