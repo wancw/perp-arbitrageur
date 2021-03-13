@@ -51,3 +51,10 @@ functions:
             - http:
                   path: _webhook/tg/${env:TELEGRAM_WEBHOOK_PATH_SECRET}
                   method: post
+
+    prometheusMetrics:
+        handler: build/src/metrics.prometheusHandler
+        events:
+            - http:
+                  path: _metrics/prom/${env:PROMETHEUS_METRICS_PATH_SECRET}
+                  method: get

@@ -13,6 +13,7 @@
         "deploy": "npm run build && sls deploy --aws-s3-accelerate --stage production",
         "logs:arbitrageur": "sls logs --stage production -f arbitrageur",
         "logs:telegramBot": "sls logs --stage production -f telegramBot",
+        "logs:prometheusMetrics": "sls logs --stage production -f prometheusMetrics",
         "show:pnl": "env $(cat .env.production | grep -v '#' | xargs) ts-node --files scripts/show-pnl.ts",
         "show:prices": "env $(cat .env.production | grep -v '#' | xargs) ts-node --files scripts/show-prices.ts"
     },
@@ -29,6 +30,7 @@
         "log4js": "6.2.1",
         "luxon": "1.23.0",
         "node-fetch": "2.6.0",
+        "prom-client": "13.1.0",
         "reflect-metadata": "0.1.13",
         "source-map-support": "0.5.19",
         "typedi": "0.8.0"
