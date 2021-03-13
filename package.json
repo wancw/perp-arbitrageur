@@ -13,7 +13,8 @@
         "deploy": "npm run build && sls deploy --aws-s3-accelerate --stage production",
         "logs:arbitrageur": "sls logs --stage production -f arbitrageur",
         "logs:telegramBot": "sls logs --stage production -f telegramBot",
-        "show:pnl": "env $(cat .env.production | grep -v '#' | xargs) ts-node --files scripts/show-pnl.ts"
+        "show:pnl": "env $(cat .env.production | grep -v '#' | xargs) ts-node --files scripts/show-pnl.ts",
+        "show:prices": "env $(cat .env.production | grep -v '#' | xargs) ts-node --files scripts/show-prices.ts"
     },
     "author": "",
     "license": "ISC",
