@@ -1,4 +1,3 @@
-import "./init"
 import { Amm } from "../types/ethers"
 import { ERC20Service } from "./ERC20Service"
 import { EthMetadata, SystemMetadataFactory } from "./SystemMetadataFactory"
