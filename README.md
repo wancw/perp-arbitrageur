@@ -39,6 +39,8 @@ ARBITRAGEUR_PK=YOUR_WALLET_PRIVATE_KEY
 # These can be obtained by going to FTX Settings > API Keys > "Create API key for bot"
 FTX_API_KEY=YOUR_FTX_API_KEY
 FTX_API_SECRET=YOUR_FTX_API_SECRET
+# Set this to your FTX subacount name only if you're using a FTX subaccount
+# FTX_SUBACCOUNT=YOUR_FTX_SUBACCOUNT_NAME
 ```
 **Note** the node endpoint defined in `.env.production` must point to an xDai node. By default, xDai's [official endpoint](https://www.xdaichain.com/for-developers/developer-resources#json-rpc-endpoints) is used. You can also choose to use [Quiknode](https://www.quiknode.io/), or spin up [your own node](https://www.xdaichain.com/for-validators/node-deployment/manual-deployment). Ethereum nodes such as **Infura or Alchemy will not work**.
 
