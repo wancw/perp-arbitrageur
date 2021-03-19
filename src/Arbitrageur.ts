@@ -56,7 +56,7 @@ export class Arbitrageur {
         })
 
         const LAMBDA_SCHEDULE_RATE = 60 * 1000 // 1 minute in ms
-        const LAMBDA_EXECUTION_BUFFER = 5 * 1000 // 10 second in ms
+        const LAMBDA_EXECUTION_BUFFER = 1 * 1000 // 1 second in ms
         const ARBITRAGE_TIME_GAP = 1 * 1000 // 1 second in ms
 
         const timeToStop = Date.now() + LAMBDA_SCHEDULE_RATE - LAMBDA_EXECUTION_BUFFER
