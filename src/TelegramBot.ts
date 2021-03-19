@@ -101,6 +101,15 @@ export class TelegramBot {
     }
 
     async notifyAdmin(text: string, { notification = true } = {}): Promise<void> {
+        if (!this.adminUserId) {
+            this.log.jwarn({
+                event: "NotifyAdminSkipped",
+                description: "TELEGRAM_ADMIN_USER_ID not set",
+                params: { text },
+            })
+            return
+        }
+
         await this._sendMessage({
             chat_id: this.adminUserId,
             text: text.replace(/([\_\*\[\]\(\)\~\`\>\#\+\-\=\|\{\}\.\!])/g, "\\$1"),
@@ -119,6 +128,15 @@ export class TelegramBot {
     }
 
     private async _sendMessage(req: TelegramSendMessageRequest): Promise<void> {
+        if (!this.botToken) {
+            this.log.jwarn({
+                event: "SendMessageSkipped",
+                description: "TELEGRAM_BOT_TOKEN not set",
+                params: { request: req },
+            })
+            return
+        }
+
         const response = await fetch(`https://api.telegram.org/bot${this.botToken}/sendMessage`, {
             method: "post",
             headers: { "Content-Type": "application/json" },
