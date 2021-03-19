@@ -103,7 +103,7 @@ export class TelegramBot {
     async notifyAdmin(text: string): Promise<void> {
         await this._sendMessage({
             chat_id: this.adminUserId,
-            text,
+            text: text.replace(/([\_\*\[\]\(\)\~\`\>\#\+\-\=\|\{\}\.\!])/g, "\\$1"),
             parse_mode: "MarkdownV2",
         })
     }
