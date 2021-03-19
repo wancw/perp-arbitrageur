@@ -87,7 +87,7 @@ export class TelegramBot {
                         `Total: ${fixedValStrs[2]}`,
                         "```",
                     ].join("\n"),
-                    true
+                    { notification: false }
                 )
 
                 // dirty hack: to release WebSocket connection
@@ -100,22 +100,51 @@ export class TelegramBot {
         }
     }
 
-    private async sendText(chat: TelegramChat, text: string, disableNotification = false): Promise<void> {
+    async notifyAdmin(text: string, { notification = true } = {}): Promise<void> {
+        if (!this.adminUserId) {
+            this.log.jwarn({
+                event: "NotifyAdminSkipped",
+                description: "TELEGRAM_ADMIN_USER_ID not set",
+                params: { text },
+            })
+            return
+        }
+
+        await this._sendMessage({
+            chat_id: this.adminUserId,
+            text: text.replace(/([\_\*\[\]\(\)\~\`\>\#\+\-\=\|\{\}\.\!])/g, "\\$1"),
+            parse_mode: "MarkdownV2",
+            disable_notification: !notification,
+        })
+    }
+
+    private async sendText(chat: TelegramChat, text: string, { notification = true } = {}): Promise<void> {
         await this._sendMessage({
             chat_id: chat.id,
             text,
             parse_mode: "MarkdownV2",
-            disable_notification: disableNotification,
+            disable_notification: !notification,
         })
     }
 
     private async _sendMessage(req: TelegramSendMessageRequest): Promise<void> {
+        if (!this.botToken) {
+            this.log.jwarn({
+                event: "SendMessageSkipped",
+                description: "TELEGRAM_BOT_TOKEN not set",
+                params: { request: req },
+            })
+            return
+        }
+
         const response = await fetch(`https://api.telegram.org/bot${this.botToken}/sendMessage`, {
             method: "post",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(req),
         })
-        this.log.jinfo({ event: "SendMessage", response })
+        const { status } = response
+        const errorDescription = (await response.json()).description
+        this.log.jinfo({ event: "SendMessage", response: { status, errorDescription } })
     }
 }
 
