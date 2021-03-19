@@ -16,6 +16,16 @@ provider:
     stage: production
     region: ap-northeast-1
     environment:
+    iamRoleStatements:
+        - Effect: Allow
+          Action:
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:GetItem
+              - dynamodb:PutItem
+              - dynamodb:UpdateItem
+              - dynamodb:DeleteItem
+          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.ammConfigTableName}"
 
 package:
     exclude:
@@ -31,11 +41,15 @@ custom:
         includeModules: false
         packager: 'npm'
 
+    ammConfigTableName: arbitrageur-config-${self:provider.stage}
+
 functions:
     arbitrageur:
         handler: build/src/schedule.handler
         reservedConcurrency: 1
         maximumRetryAttempts: 0
+        environment:
+            AMM_CONFIG_TABLE_NAME: ${self:custom.ammConfigTableName}
         events:
             - schedule: rate(1 minute)
 
@@ -52,3 +66,19 @@ functions:
             - http:
                   path: _metrics/prom/${env:PROMETHEUS_METRICS_PATH_SECRET}
                   method: get
+
+resources:
+    Resources:
+        AmmConfigTable:
+            Type: AWS::DynamoDB::Table
+            Properties:
+                TableName: ${self:custom.ammConfigTableName}
+                AttributeDefinitions:
+                    - AttributeName: ammPair
+                      AttributeType: S
+                KeySchema:
+                    - AttributeName: ammPair
+                      KeyType: HASH
+                ProvisionedThroughput:
+                    ReadCapacityUnits: 1
+                    WriteCapacityUnits: 1
