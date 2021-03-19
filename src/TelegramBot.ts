@@ -1,5 +1,3 @@
-import "./init" // this import is required
-
 import fetch from "node-fetch"
 import { Log } from "./Log"
 import { ServerProfile } from "./ServerProfile"

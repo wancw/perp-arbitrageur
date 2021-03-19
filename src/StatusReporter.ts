@@ -1,5 +1,3 @@
-import "./init"
-
 import Big from "big.js"
 import { Wallet } from "ethers"
 import { parseBytes32String } from "ethers/lib/utils"

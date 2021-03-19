@@ -12,6 +12,7 @@ export class ServerProfile {
     readonly ftxSubaccount: string | undefined
     readonly telegramAdminUserId: number
     readonly telegramBotToken: string
+    readonly ammConfigTableName: string
 
     constructor() {
         this.web3Endpoint = process.env.WEB3_ENDPOINT!
@@ -24,6 +25,8 @@ export class ServerProfile {
 
         this.telegramAdminUserId = Number.parseInt(process.env.TELEGRAM_ADMIN_USER_ID || "-1", 10) || -1
         this.telegramBotToken = process.env.TELEGRAM_BOT_TOKEN!
+
+        this.ammConfigTableName = process.env.AMM_CONFIG_TABLE_NAME!
 
         this.log.jinfo({
             event: "ServerProfile",

@@ -1,4 +1,3 @@
-import "./init"
 import { Amm } from "../types/ethers"
 import { ERC20Service } from "./ERC20Service"
 import { EthMetadata, SystemMetadataFactory } from "./SystemMetadataFactory"
@@ -17,6 +16,7 @@ import Big from "big.js"
 import FTXRest from "ftx-api-rest"
 import { sleep } from "./util"
 import { TelegramBot } from "./TelegramBot"
+import { DynamoDB } from "aws-sdk"
 
 @Service()
 export class Arbitrageur {
@@ -25,6 +25,7 @@ export class Arbitrageur {
     private readonly perpfiFee = Big(0.001) // default 0.1%
     private readonly arbitrageur: Wallet
     private readonly ftxClient: any
+    private readonly dynamoDb: DynamoDB.DocumentClient
 
     private ftxPositionsMap!: Record<string, FtxPosition>
     private nextNonce!: number
@@ -46,6 +47,7 @@ export class Arbitrageur {
             secret: this.serverProfile.ftxApiSecret,
             subaccount: this.serverProfile.ftxSubaccount,
         })
+        this.dynamoDb = new DynamoDB.DocumentClient()
     }
 
     async start(): Promise<void> {
@@ -56,8 +58,10 @@ export class Arbitrageur {
             },
         })
 
+        await this.updateAmmConfig()
+
         const LAMBDA_SCHEDULE_RATE = 60 * 1000 // 1 minute in ms
-        const LAMBDA_EXECUTION_BUFFER = 5 * 1000 // 10 second in ms
+        const LAMBDA_EXECUTION_BUFFER = 1 * 1000 // 1 second in ms
         const ARBITRAGE_TIME_GAP = 1 * 1000 // 1 second in ms
 
         const timeToStop = Date.now() + LAMBDA_SCHEDULE_RATE - LAMBDA_EXECUTION_BUFFER
@@ -77,6 +81,56 @@ export class Arbitrageur {
 
         await this.arbitrage()
         setInterval(async () => await this.arbitrage(), 1000 * 60 * 1) // default 1 minute
+    }
+
+    async updateAmmConfig(): Promise<void> {
+        const ammConfigTableName = this.serverProfile.ammConfigTableName
+        if (!ammConfigTableName) {
+            this.log.jinfo({
+                event: "CheckAmmConfigTable",
+                params: {
+                    reason: "AMM_CONFIG_TABLE_NAME not defined",
+                },
+            })
+            return
+        }
+
+        const { Items: configItems } = await this.dynamoDb.scan({ TableName: ammConfigTableName, Limit: 20 }).promise()
+        this.log.jinfo({
+            event: "FetchAmmConfig",
+            params: {
+                itemCount: Array.isArray(configItems) ? configItems.length : "-1",
+            },
+        })
+        if (!configItems) {
+            return
+        }
+
+        for (const configItem of configItems) {
+            const { ammPair, ENABLED, PERPFI_SHORT_ENTRY_TRIGGER, PERPFI_LONG_ENTRY_TRIGGER } = configItem
+            if (!ammConfigMap[ammPair]) {
+                continue
+            }
+            const targetConfig = ammConfigMap[ammPair]
+            if (ENABLED !== undefined) {
+                targetConfig.ENABLED = !!ENABLED
+            }
+
+            if (PERPFI_SHORT_ENTRY_TRIGGER) {
+                targetConfig.PERPFI_SHORT_ENTRY_TRIGGER = Big(PERPFI_SHORT_ENTRY_TRIGGER)
+            }
+
+            if (PERPFI_LONG_ENTRY_TRIGGER) {
+                targetConfig.PERPFI_LONG_ENTRY_TRIGGER = Big(PERPFI_LONG_ENTRY_TRIGGER)
+            }
+        }
+
+        this.log.jinfo({
+            event: "UpdatedAmmConfig",
+            params: {
+                ammConfigMap,
+            },
+        })
     }
 
     async checkBlockFreshness(): Promise<void> {
