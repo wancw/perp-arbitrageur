@@ -123,7 +123,9 @@ export class TelegramBot {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(req),
         })
-        this.log.jinfo({ event: "SendMessage", response })
+        const { status } = response
+        const errorDescription = (await response.json()).description
+        this.log.jinfo({ event: "SendMessage", response: { status, errorDescription } })
     }
 }
 
