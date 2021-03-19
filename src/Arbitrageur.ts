@@ -116,7 +116,7 @@ export class Arbitrageur {
                 event: "xDaiNotEnough",
                 params: { balance: xDaiBalance.toFixed() },
             })
-            await this.telegramBot.notifyAdmin(`xDai not enough\n(${xDaiBalance.toFixed()})`)
+            await this.telegramBot.notifyAdmin(`xDai not enough\n(${xDaiBalance.toFixed()})`, { notification: false })
             return
         }
 
@@ -134,7 +134,7 @@ export class Arbitrageur {
                 event: "FtxUsdNotEnough",
                 params: { balance: ftxBalance.toFixed() },
             })
-            await this.telegramBot.notifyAdmin(`FTX USDC not enough\n(${ftxBalance.toFixed()})`)
+            await this.telegramBot.notifyAdmin(`FTX USDC not enough\n(${ftxBalance.toFixed()})`, { notification: false })
             return
         }
 
