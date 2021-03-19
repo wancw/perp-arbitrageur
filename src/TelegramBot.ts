@@ -87,7 +87,7 @@ export class TelegramBot {
                         `Total: ${fixedValStrs[2]}`,
                         "```",
                     ].join("\n"),
-                    true
+                    { notification: false }
                 )
 
                 // dirty hack: to release WebSocket connection
@@ -100,20 +100,21 @@ export class TelegramBot {
         }
     }
 
-    async notifyAdmin(text: string): Promise<void> {
+    async notifyAdmin(text: string, { notification = true } = {}): Promise<void> {
         await this._sendMessage({
             chat_id: this.adminUserId,
             text: text.replace(/([\_\*\[\]\(\)\~\`\>\#\+\-\=\|\{\}\.\!])/g, "\\$1"),
             parse_mode: "MarkdownV2",
+            disable_notification: !notification,
         })
     }
 
-    private async sendText(chat: TelegramChat, text: string, disableNotification = false): Promise<void> {
+    private async sendText(chat: TelegramChat, text: string, { notification = true } = {}): Promise<void> {
         await this._sendMessage({
             chat_id: chat.id,
             text,
             parse_mode: "MarkdownV2",
-            disable_notification: disableNotification,
+            disable_notification: !notification,
         })
     }
 
