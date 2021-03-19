@@ -16,12 +16,6 @@ provider:
     stage: production
     region: ap-northeast-1
     environment:
-        WEB3_ENDPOINT: ${env:WEB3_ENDPOINT}
-        ARBITRAGEUR_PK: ${env:ARBITRAGEUR_PK}
-        FTX_API_KEY: ${env:FTX_API_KEY}
-        FTX_API_SECRET: ${env:FTX_API_SECRET}
-        TELEGRAM_BOT_TOKEN: ${env:TELEGRAM_BOT_TOKEN}
-        TELEGRAM_ADMIN_USER_ID: ${env:TELEGRAM_ADMIN_USER_ID}
 
 package:
     exclude:
